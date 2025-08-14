@@ -1,5 +1,7 @@
 package com.projects.airline_gateway_svc.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.airline_gateway_svc.dao.FlightDetails;
 import com.projects.airline_gateway_svc.dao.UserDetails;
 import com.projects.airline_gateway_svc.dao.entity.FlightDetailsRepository;
@@ -14,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -27,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     FlightDetailsRepository flightDetailsRepository;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Override
     public ResponseEntity<String> saveUserDetails(SignUpRequest signUpRequest) {
@@ -51,19 +58,37 @@ public class UserServiceImpl implements UserService {
     @Override
     public FlightDetailsResponse fetchFlights(FlightDetailsRequest flightDetailsRequest) {
 
-        FlightDetails flightDetails = flightDetailsRepository.findByDateAndFlightDepartureAndFlightDestination(flightDetailsRequest.getDate(),flightDetailsRequest.getFlightTakeoff(),flightDetailsRequest.getFlightLanding());
+        FlightDetails flightDetails = flightDetailsRepository
+                .findByDateAndFlightDepartureAndFlightDestination(
+                        flightDetailsRequest.getDate(),
+                        flightDetailsRequest.getFlightTakeoff(),
+                        flightDetailsRequest.getFlightLanding()
+                );
+
+        if (flightDetails == null) {
+            throw new ResourceAccessException("No flight found for given details");
+        }
+
         FlightDetailsResponse flightDetailsResponse = new FlightDetailsResponse();
         flightDetailsResponse.setFlightDate(flightDetails.getFlightDate());
         flightDetailsResponse.setFlightDestination(flightDetails.getFlightDestination());
         flightDetailsResponse.setFlightDeparture(flightDetails.getFlightDeparture());
         flightDetailsResponse.setFlightName(flightDetails.getFlightName());
         flightDetailsResponse.setFlightId(flightDetails.getFlightId());
+        flightDetailsResponse.setFlightLandingTime(flightDetails.getFlightLandingTime());
+        flightDetailsResponse.setFlightTakeoffTime(flightDetails.getFlightTakeoffTime());
 
-//        List<SeatInfo> seatList = new ArrayList<>();
-//        for (SeatInfo seat : flightDetails.getSeats()) {
-//            seatList.add(seat);
-//        }
-//        flightDetailsResponse.setSeats(seatList);
+        try {
+            // Use TypeReference to inform Jackson about the generic List<Seat> type
+            List<SeatInfo> seatList = objectMapper.readValue(flightDetails.getSeats(), new TypeReference<List<SeatInfo>>() {});
+            flightDetailsResponse.setSeats(seatList);
+        } catch (Exception e) {
+            // Handle potential JSON parsing errors, e.g., log the error
+            // For now, we set an empty list as a fallback.
+            e.printStackTrace();
+            flightDetailsResponse.setSeats(Collections.emptyList());
+        }
+
         return flightDetailsResponse;
     }
 

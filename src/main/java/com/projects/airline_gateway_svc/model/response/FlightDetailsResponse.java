@@ -20,7 +20,7 @@ public class FlightDetailsResponse {
     private String flightDeparture;
     private String flightDestination;
 
-    @ElementCollection
+//    @ElementCollection
     private List<SeatInfo> seats;
 
 }

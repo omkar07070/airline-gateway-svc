@@ -1,11 +1,13 @@
 package com.projects.airline_gateway_svc.dao;
 
-
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.airline_gateway_svc.model.response.SeatInfo;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -38,8 +40,7 @@ public class FlightDetails {
     @Column(name = "flight_destination", length = 255, nullable = false)
     private String flightDestination;
 
-    // Store JSON array as List<SeatInfo>
-    @ElementCollection
-    @CollectionTable(name = "flight_seats", joinColumns = @JoinColumn(name = "flight_id"))
-    private List<SeatInfo> seats;
+    @Column(name = "seats")
+    private String seats;
+
 }
