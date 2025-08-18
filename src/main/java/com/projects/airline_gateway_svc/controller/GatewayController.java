@@ -1,5 +1,7 @@
 package com.projects.airline_gateway_svc.controller;
 
+import com.projects.airline_gateway_svc.dao.BookingDetails;
+import com.projects.airline_gateway_svc.model.request.BookFlightRequest;
 import com.projects.airline_gateway_svc.model.request.FlightDetailsRequest;
 import com.projects.airline_gateway_svc.model.request.SignUpRequest;
 import com.projects.airline_gateway_svc.model.response.FlightDetailsResponse;
@@ -33,4 +35,8 @@ public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest){
         return userService.fetchFlights(flightDetailsRequest);
 
     }
+
+//    public void bookingSeat(@RequestBody BookFlightRequest bookFlightRequest){
+//        userService.
+//    }
 }

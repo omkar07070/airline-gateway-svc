@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.airline_gateway_svc.dao.FlightDetails;
 import com.projects.airline_gateway_svc.dao.UserDetails;
 import com.projects.airline_gateway_svc.dao.entity.FlightDetailsRepository;
+import com.projects.airline_gateway_svc.model.request.BookFlightRequest;
 import com.projects.airline_gateway_svc.model.request.FlightDetailsRequest;
 import com.projects.airline_gateway_svc.model.request.SignUpRequest;
 import com.projects.airline_gateway_svc.dao.entity.UserDetailsRepository;
@@ -92,5 +93,17 @@ public class UserServiceImpl implements UserService {
         return flightDetailsResponse;
     }
 
+    @Override
+    public FlightDetailsResponse bookFlight(BookFlightRequest bookFlightRequest) {
+
+        return null;
+    }
+
+//    public void validateUser(String userName){
+//        UserDetails userDetails = userDetailsRepository.findByName(userName);
+//        if(userDetails == null){
+//            throw new Exception );
+//        }
+//    }
 
 }
