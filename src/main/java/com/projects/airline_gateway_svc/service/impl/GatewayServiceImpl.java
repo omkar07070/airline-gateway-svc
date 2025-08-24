@@ -9,9 +9,12 @@ import com.projects.airline_gateway_svc.model.request.BookFlightRequest;
 import com.projects.airline_gateway_svc.model.request.FlightDetailsRequest;
 import com.projects.airline_gateway_svc.model.request.SignUpRequest;
 import com.projects.airline_gateway_svc.dao.entity.UserDetailsRepository;
+import com.projects.airline_gateway_svc.model.response.BookFlightResponse;
 import com.projects.airline_gateway_svc.model.response.FlightDetailsResponse;
+import com.projects.airline_gateway_svc.model.response.PaymentMessage;
 import com.projects.airline_gateway_svc.model.response.SeatInfo;
-import com.projects.airline_gateway_svc.service.UserService;
+import com.projects.airline_gateway_svc.service.BookingService;
+import com.projects.airline_gateway_svc.service.GatewayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 @Service
-public class UserServiceImpl implements UserService {
+public class GatewayServiceImpl implements GatewayService {
 
     @Autowired
     UserDetailsRepository userDetailsRepository;
@@ -35,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+BookingService bookingService;
 
     @Override
     public ResponseEntity<String> saveUserDetails(SignUpRequest signUpRequest) {
@@ -94,9 +99,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public FlightDetailsResponse bookFlight(BookFlightRequest bookFlightRequest) {
+    public BookFlightResponse bookFlight(BookFlightRequest bookFlightRequest) {
+        PaymentMessage paymentMessage = setNotificationMessage(bookFlightRequest);
 
-        return null;
+       return  bookingService.bookflight(paymentMessage);
+
+    }
+
+
+
+    private PaymentMessage setNotificationMessage(BookFlightRequest bookFlightRequest) {
+        PaymentMessage paymentMessage = new PaymentMessage();
+        paymentMessage.setEmail(bookFlightRequest.getEmail());
+        paymentMessage.setUsername(bookFlightRequest.getUserName());
+        paymentMessage.setFlightName(bookFlightRequest.getFlightName());
+        paymentMessage.setSeatNumber(bookFlightRequest.getSeatno());
+        paymentMessage.setMobileNumber(bookFlightRequest.getMobileNumber());
+        paymentMessage.setUserId(bookFlightRequest.getUserId());
+//        String transactionId = bookFlightRequest.getFlightId().substring(1, bookFlightRequest.getFlightId().length() - 1) + bookFlightRequest.getDate() + bookFlightRequest.getSeatno();
+//        paymentMessage.setTransactionId(transactionId);
+        paymentMessage.setAmount(bookFlightRequest.getAmount());
+
+        return paymentMessage;
+
     }
 
 //    public void validateUser(String userName){
@@ -105,5 +130,7 @@ public class UserServiceImpl implements UserService {
 //            throw new Exception );
 //        }
 //    }
+
+
 
 }

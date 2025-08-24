@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
@@ -11,12 +12,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BookFlightRequest {
 
+    private int userId;
     private String userName;
+    private String mobileNumber;
     private String seatType;
     private String seatno;
     private String flightName;
     private String flightId;
     private LocalDate date;
-    private String accountNumber;
+    private String email;
+    private BigDecimal amount;
 
 }
